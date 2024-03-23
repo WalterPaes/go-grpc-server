@@ -1,5 +1,3 @@
-# go-grpc-crud
-
 ## Introduction
 This repository contains an implementation of gRPC Server in Go. The service provides functionalities to manage products.
 
