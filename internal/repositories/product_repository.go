@@ -9,6 +9,7 @@ import (
 
 type ProductRepository interface {
 	Save(*model.Product) (*model.Product, error)
+	Find(id int) (*model.Product, error)
 }
 
 type productRepository struct {
@@ -27,4 +28,13 @@ func (r *productRepository) Save(product *model.Product) (*model.Product, error)
 		return nil, result.Error
 	}
 	return product, nil
+}
+
+func (r *productRepository) Find(id int) (*model.Product, error) {
+	var product model.Product
+	result := r.db.WithContext(context.Background()).Find(&product, id)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return &product, nil
 }

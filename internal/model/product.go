@@ -1,6 +1,10 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Product struct {
 	gorm.Model
@@ -9,4 +13,6 @@ type Product struct {
 	Category    string
 	Description string
 	Price       float64
+	CreatedAt   time.Time `gorm:"autoCreateTime:false"`
+	UpdatedAt   time.Time `gorm:"autoUpdateTime:false"`
 }

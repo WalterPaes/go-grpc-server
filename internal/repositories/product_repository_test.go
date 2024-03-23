@@ -57,9 +57,16 @@ func (rs *RepositorySuite) AfterTest(_, _ string) {
 	assert.NoError(rs.T(), rs.mock.ExpectationsWereMet())
 }
 
-func (rs *RepositorySuite) Test_productRepository_Save() {
-	p, err := rs.productRepository.Save(rs.product)
+func (rs *RepositorySuite) Test_productRepository() {
+	rs.T().Run("Save", func(t *testing.T) {
+		p, err := rs.productRepository.Save(rs.product)
+		assert.NoError(rs.T(), err)
+		assert.Equal(rs.T(), rs.product, p)
+	})
 
-	assert.NoError(rs.T(), err)
-	assert.Equal(rs.T(), rs.product, p)
+	rs.T().Run("Find", func(t *testing.T) {
+		p, err := rs.productRepository.Find(int(rs.product.ID))
+		assert.NoError(rs.T(), err)
+		assert.Equal(rs.T(), rs.product, p)
+	})
 }
