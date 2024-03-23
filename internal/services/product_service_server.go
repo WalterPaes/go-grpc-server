@@ -40,3 +40,18 @@ func (s *ProductServiceServer) Create(ctx context.Context, req *pb.ProductReques
 		Price:       float32(p.Price),
 	}, nil
 }
+
+func (s *ProductServiceServer) FindById(ctx context.Context, req *pb.FindProductRequest) (*pb.ProductResponse, error) {
+	p, err := s.productRepository.Find(ctx, int(req.GetId()))
+	if err != nil {
+		return nil, grpc.Errorf(codes.Internal, "Error: %s", err.Error())
+	}
+
+	return &pb.ProductResponse{
+		Id:          int32(p.ID),
+		Name:        p.Name,
+		Category:    p.Category,
+		Description: p.Description,
+		Price:       float32(p.Price),
+	}, nil
+}

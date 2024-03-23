@@ -1,11 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net"
 
 	"github.com/WalterPaes/go-grpc-crud/config"
+	"github.com/WalterPaes/go-grpc-crud/internal/model"
 	"github.com/WalterPaes/go-grpc-crud/internal/repositories"
 	"github.com/WalterPaes/go-grpc-crud/internal/services"
 	"github.com/WalterPaes/go-grpc-crud/pkg/database"
@@ -21,8 +21,9 @@ func main() {
 	}
 
 	db := database.NewDB(sqlite.Open(cfg.DbDSN))
+	db.AutoMigrate(&model.Product{})
 
-	listen, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", cfg.ServerPort))
+	listen, err := net.Listen("tcp", cfg.ServerUrl)
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}

@@ -11,9 +11,9 @@ import (
 )
 
 type Config struct {
-	ServerPort int
-	DbDSN      string
-	DbTimeout  time.Duration
+	ServerUrl string
+	DbDSN     string
+	DbTimeout time.Duration
 }
 
 func NewConfig(filenames ...string) (*Config, error) {
@@ -22,20 +22,15 @@ func NewConfig(filenames ...string) (*Config, error) {
 		return nil, errors.New("Error loading .env file")
 	}
 
-	serverPort, err := strEnvToInt("SERVER_PORT")
-	if err != nil {
-		return nil, err
-	}
-
 	dbTimeout, err := strEnvToInt("DB_TIMEOUT")
 	if err != nil {
 		return nil, err
 	}
 
 	return &Config{
-		ServerPort: serverPort,
-		DbDSN:      os.Getenv("DB_DSN"),
-		DbTimeout:  time.Second * time.Duration(dbTimeout),
+		ServerUrl: os.Getenv("SERVER_URL"),
+		DbDSN:     os.Getenv("DB_DSN"),
+		DbTimeout: time.Second * time.Duration(dbTimeout),
 	}, nil
 }
 
