@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net"
 
@@ -21,7 +22,7 @@ func main() {
 
 	db := database.NewDB(sqlite.Open(cfg.DbDSN))
 
-	l, err := net.Listen("tcp", "localhost:9000")
+	listen, err := net.Listen("tcp", fmt.Sprintf("localhost:%s", cfg.ServerPort))
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
@@ -32,5 +33,5 @@ func main() {
 	server := grpc.NewServer()
 	pb.RegisterProductServiceServer(server, productServiceServer)
 
-	server.Serve(l)
+	server.Serve(listen)
 }

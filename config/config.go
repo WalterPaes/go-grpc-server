@@ -10,11 +10,10 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var errLoadEnv = "Error on load env `%s`"
-
 type Config struct {
-	DbDSN     string
-	DbTimeout time.Duration
+	ServerPort int
+	DbDSN      string
+	DbTimeout  time.Duration
 }
 
 func NewConfig(filenames ...string) (*Config, error) {
@@ -23,13 +22,27 @@ func NewConfig(filenames ...string) (*Config, error) {
 		return nil, errors.New("Error loading .env file")
 	}
 
-	dbTimeout, err := strconv.Atoi(os.Getenv("DB_TIMEOUT"))
+	serverPort, err := strEnvToInt("SERVER_PORT")
 	if err != nil {
-		return nil, fmt.Errorf(errLoadEnv, "db_timeout")
+		return nil, err
+	}
+
+	dbTimeout, err := strEnvToInt("DB_TIMEOUT")
+	if err != nil {
+		return nil, err
 	}
 
 	return &Config{
-		DbDSN:     os.Getenv("DB_DSN"),
-		DbTimeout: time.Second * time.Duration(dbTimeout),
+		ServerPort: serverPort,
+		DbDSN:      os.Getenv("DB_DSN"),
+		DbTimeout:  time.Second * time.Duration(dbTimeout),
 	}, nil
+}
+
+func strEnvToInt(envName string) (int, error) {
+	env, err := strconv.Atoi(os.Getenv(envName))
+	if err != nil {
+		return 0, fmt.Errorf("Error on load env `%s`", env)
+	}
+	return env, nil
 }
