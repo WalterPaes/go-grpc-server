@@ -1,9 +1,11 @@
 package repositories
 
 import (
+	"context"
 	"database/sql"
 	"os"
 	"testing"
+	"time"
 
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/WalterPaes/go-grpc-crud/internal/model"
@@ -21,6 +23,7 @@ type RepositorySuite struct {
 	conn              *sql.DB
 	DB                *gorm.DB
 	mock              sqlmock.Sqlmock
+	ctx               context.Context
 	productRepository *productRepository
 	product           *model.Product
 }
@@ -34,13 +37,15 @@ func (rs *RepositorySuite) SetupSuite() {
 		err error
 	)
 
+	rs.ctx = context.Background()
+
 	rs.conn, rs.mock, err = sqlmock.New()
 	assert.NoError(rs.T(), err)
 
 	rs.DB = database.NewDB(sqlite.Open(dbName))
 	rs.DB.AutoMigrate(&model.Product{})
 
-	rs.productRepository = NewProductRepository(rs.DB)
+	rs.productRepository = NewProductRepository(rs.DB, time.Second*10)
 	assert.IsType(rs.T(), &productRepository{}, rs.productRepository)
 
 	rs.product = &model.Product{
@@ -59,13 +64,13 @@ func (rs *RepositorySuite) AfterTest(_, _ string) {
 
 func (rs *RepositorySuite) Test_productRepository() {
 	rs.T().Run("Save", func(t *testing.T) {
-		p, err := rs.productRepository.Save(rs.product)
+		p, err := rs.productRepository.Save(rs.ctx, rs.product)
 		assert.NoError(rs.T(), err)
 		assert.Equal(rs.T(), rs.product, p)
 	})
 
 	rs.T().Run("Find", func(t *testing.T) {
-		p, err := rs.productRepository.Find(int(rs.product.ID))
+		p, err := rs.productRepository.Find(rs.ctx, int(rs.product.ID))
 		assert.NoError(rs.T(), err)
 		assert.Equal(rs.T(), rs.product, p)
 	})

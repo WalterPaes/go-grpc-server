@@ -24,6 +24,6 @@ message FindProductRequest {
 }
 
 service ProductService {
-    rpc Save(ProductRequest) returns (ProductResponse);
+    rpc Create(ProductRequest) returns (ProductResponse);
     rpc FindById(FindProductRequest) returns (ProductResponse);
 }
